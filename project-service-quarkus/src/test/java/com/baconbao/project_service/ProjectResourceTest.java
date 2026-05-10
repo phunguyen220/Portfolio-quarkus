@@ -8,13 +8,15 @@ import static org.hamcrest.CoreMatchers.is;
 
 @QuarkusTest
 class ProjectResourceTest {
-    @Test
-    void testHelloEndpoint() {
-        given()
-          .when().get("/project")
-          .then()
-             .statusCode(200)
-             .body(is("Hello from Quarkus REST"));
-    }
 
+    @Test
+    void testGetAllEndpoint() {
+        given()
+                .when().get("/project/getAll")
+                .then()
+                .statusCode(200)
+                .body("success", is(true))
+                .body("message", is("Get all is successfully"))
+                .body("data", is("ok"));
+    }
 }
