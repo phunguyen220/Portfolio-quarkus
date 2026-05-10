@@ -1,243 +1,274 @@
-# Portfolio
-    This project was developed by a team of three members with the aim of creating an environment where users can interact with each other about their profiles, find suitable jobs, and build engaging personal portfolios.
+# Project Service Quarkus
 
-## Table of Contents
-- [Introduction](#introduction)
-- [Features](#features)
-- [TechnologiesUsed](#technologiesused)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [Contact](#contact)
+`project-service-quarkus` là phiên bản Quarkus của `project-service` trong hệ thống Portfolio Microservice.
 
-## Introduction
-- Overview: A comprehensive portfolio management system designed for users, HRs, managers, and admins. The platform allows users to create profiles, manage projects, and apply for jobs. HRs and managers can oversee job applications, manage job postings, and control company details. Admins have the highest level of control, managing the overall system.
-- Purpose: The purpose of this project is to develop and refine skills in building scalable, high-performance web applications using Angular for the frontend and a microservices architecture for the backend. This project also aims to provide hands-on experience with modern software development practices, including RESTful API design, authentication, and authorization with Spring Security and JWT, and efficient data management with both SQL (MySQL) and NoSQL (MongoDB) databases. Additionally, it enhances teamwork and collaboration skills in a real-world development environment.
-- Audience: This portfolio is targeted at recruiters, users seeking to create and showcase their professional profiles, and administrators responsible for managing the platform and overseeing company interactions within the microservices ecosystem.
+Service này được xây dựng bằng Quarkus và dùng để xử lý các API liên quan đến Project. Hiện tại service đang được triển khai song song với Spring Boot `project-service` cũ để phục vụ quá trình migrate từng bước từ Spring Boot sang Quarkus.
 
-## Features
-1. User Profile Management:
-- Users can create and customize their profiles, including adding personal details, skills, and work experience.
-- Ability to create and manage projects, with options to link these projects to the user's profile.
-- View company information and explore available jobs.
-- Apply for jobs directly through the platform.
-2. Job Management:
-- HR managers can create, edit, and manage job postings specific to their companies.
-- Jobs are linked to specific companies managed by the HR, providing a streamlined job application process for users.
-3. Application Review:
-- HR managers can review jobs submitted by users.
-- Option to approve or reject user apply jobs based on profile suitability.
-- Notifications are sent to users regarding the status of their job applications.
-4. Company Management:
-Managers have the ability to manage company details, including editing company information.
-Managers can oversee job postings and coordinate with HR managers to ensure job openings are properly listed.
-5. Admin Controls:
-- Admins have the highest level of control, managing both companies and their associated managers.
-6. Authentication and Security:
-- Secure user authentication using JWT tokens, ensuring safe and reliable access to the platform.
-- Role-based access control to ensure users, HR managers, managers, and admins only access authorized sections.
-7. Microservices Architecture:
-- The project is built using a microservices architecture, allowing for scalable and modular development.
-- Services communicate via REST APIs, with load balancing and service discovery handled by Eureka Server.
-- API Gateway for centralized request handling and security enforcement.
-8. Technology Stack:
-- Frontend: Angular framework for a responsive and dynamic user interface.
-- Backend: Spring Boot, with integrated features such as Spring Security, JWT for authentication, API Gateway for request management, OpenFeign for service communication, and Eureka Server for service discovery.
-- Database: MySQL for structured, relational data and MongoDB for flexible, NoSQL data management.
-- Service Communication: OpenFeign is utilized for seamless inter-service communication within the microservices architecture. API Gateway and Eureka Server are employed for centralized routing and service discovery, ensuring efficient and secure operations across services.
+---
 
-# Project Installation Guide
+## Công nghệ sử dụng
 
-## Overview
+- Java 21
+- Quarkus 3.35.2
+- Quarkus REST
+- REST Jackson
+- Hibernate ORM with Panache
+- JDBC MySQL
+- SmallRye OpenAPI
+- Maven
+- Docker
+- Kubernetes
 
-This guide will walk you through the process of setting up the project, including installing necessary tools, setting up databases, and running the services.
+---
 
-## Prerequisites
+## Cấu hình chạy local
 
-Before you start, make sure you have the following installed:
+File cấu hình chính nằm tại:
 
-1. **Node.js and Angular CLI**
-   - Download and install Node.js from [Node.js official site](https://nodejs.org/).
-   - Install Angular CLI globally:
-     ```bash
-     npm install -g @angular/cli
-     ```
+```text
+src/main/resources/application.properties
+```
 
-2. **Java and Maven**
-   - Install Java Development Kit (JDK) version 21 or higher from [Oracle](https://www.oracle.com/java/technologies/downloads/#java21).
-   - Install Maven from [Maven official site](https://maven.apache.org/install.html).
+Cấu hình hiện tại:
 
-3. **MySQL or XAMPP**
-   - Download and install MySQL or XAMPP from [XAMPP official site](https://www.apachefriends.org/index.html).
-   - Set up MySQL and create the following databases:
-     - `portfolio`
-     - `project1`
-     - `notification1`
+```properties
+quarkus.http.port=8086
 
-4. **MongoDB**
-   - Download and install MongoDB from [MongoDB official site](https://www.mongodb.com/try/download/community).
-   - Start the MongoDB server.
+quarkus.datasource.devservices.enabled=false
+quarkus.datasource.db-kind=mysql
+quarkus.datasource.username=root
+quarkus.datasource.password=123456
+quarkus.datasource.jdbc.url=jdbc:mysql://localhost:3306/project1?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
 
-## Step 1: Clone the Repository
+quarkus.hibernate-orm.schema-management.strategy=update
+quarkus.hibernate-orm.log.sql=true
+```
 
-Clone the project repository to your local machine:
+Service chạy ở port:
+
+```text
+http://localhost:8086
+```
+
+---
+
+## Chạy ứng dụng ở chế độ dev
+
+Trong thư mục `project-service-quarkus`, chạy:
+
 ```bash
-git clone https://github.com/Hoangjunss/microservice.git
-cd microservice
+mvn quarkus:dev
 ```
 
-## Step 2: Setting Up Angular (Client)
+Hoặc dùng Maven wrapper:
+
 ```bash
-    cd microservice/client
-    npm install
+./mvnw quarkus:dev
 ```
-- Start the Angular development server:
-```bash 
-    ng serve
+
+Trên Windows PowerShell:
+
+```powershell
+.\mvnw quarkus:dev
 ```
-The Angular app should now be running on http://localhost:4200/.
 
-## Step 3: Set Up MySQL Databases
-1. For MySQL
-    Log in to MySQL: ```bash mysql -u root -p ```
-    Create the databases:
-        CREATE DATABASE portfolio;
-        CREATE DATABASE project1;
-        CREATE DATABASE notification1;
-2. For XAMPP
-    - Start XAMPP Control Panel.
-    - Start Apache and MySQL services.
-    - Open phpMyAdmin in your browser (http://localhost/phpmyadmin).
-    - Create the portfolio, project1, and notification1 databases.
-## Step 4: Set Up MongoDB
-    Start your MongoDB server (usually on localhost:27017 by default). If MongoDB is installed via a package manager, you may start it using: mongod
+Khi chạy thành công, terminal sẽ hiển thị:
 
-## Step 5: Running the Microservices
-1. Discovery Server (Eureka Server)
-    - Run Discovery Server
-    microservice\discovery-server\src\main\java\com\example\discovery_server>Discovery.java
-2. API Gateway
-    - Run API Gateway
-    microservice\api-gateway\src\main\java\com\baconbao\api_gateway>ApiGatewayApplication.java
-3. Running the Individual Services
-For each service (e.g., user-service, manager-service, profile-service, project-service, etc,..):
-## Conclusion
-Once all services are up and running, the application should be fully operational. You can access the Angular frontend at http://localhost:4200/ and interact with the microservices through the API Gateway.
+```text
+Listening on: http://localhost:8086
+```
 
-## Usage
+---
 
-### Frontend (Angular)
+## API test hiện tại
 
-1. **Running the Angular Application**
-   - Ensure you have started the backend services (Discovery Server, API Gateway, and other microservices) as described in the [Installation](#installation) section.
-   - Navigate to the Angular project directory:
-     ```bash
-     cd microservice/client
-     ```
-   - Start the Angular development server:
-     ```bash
-     ng serve
-     ```
-   - Open your browser and go to [http://localhost:4200/](http://localhost:4200/) to access the frontend application.
+Endpoint test:
 
-2. **Features**
-   - **User Role**: Users can create profiles, add projects, and describe their skills. They can view company information, apply for jobs, and manage their profiles.
-   - **HR Role**: HR users can review applications, approve or reject candidates, and create job postings for specific companies.
-   - **Manager Role**: Managers can create and manage job postings for their company, update company details, and oversee HR activities.
-   - **Admin Role**: Admins manage overall system configuration and monitor all activities within the application.
+```http
+GET /project/getAll
+```
 
-### Backend (Microservices)
+Gọi bằng PowerShell:
 
-1. **Interacting with the Services**
-   - The API Gateway handles routing requests to the appropriate microservice. You can interact with the services via RESTful endpoints exposed by the API Gateway.
-   - For detailed API endpoints and usage, refer to the individual microservices' documentation.
+```powershell
+Invoke-RestMethod -Uri "http://localhost:8086/project/getAll" -Method Get
+```
 
-2. **Service Endpoints**
-   - **Discovery Server**: Manages service registration and discovery. Accessible at [http://localhost:8761/](http://localhost:8761/).
-   - **API Gateway**: Routes requests to the correct microservices. Accessible at [http://localhost:8080/](http://localhost:8080/).
-   - **Microservices**: Each microservice exposes its own set of API endpoints. You can interact with these through the API Gateway.
+Kết quả mong muốn:
 
-3. **Testing**
-   - To test the application, you can use tools like Postman to send requests to the API Gateway and verify responses from different services.
+```json
+{
+  "success": true,
+  "message": "Get all is successfully",
+  "data": "ok"
+}
+```
 
+---
 
-4. **Configuration**
-   - Configuration files are located in the `src/main/resources` directory of each microservice. Update these files to change service settings, such as database connections and service-specific configurations.
+## Build project
 
-## Contributing
+Chạy lệnh:
 
-We welcome contributions to this project! If you would like to contribute, please follow these guidelines:
+```bash
+mvn clean package -DskipTests
+```
 
-1. **Fork the Repository**
-   - Fork the repository on GitHub to create your own copy of the project.
+Sau khi build thành công, file chạy sẽ được tạo trong:
 
-2. **Create a Branch**
-   - Create a new branch for your feature or bug fix:
-     ```bash
-     git checkout -b feature/your-feature
-     ```
+```text
+target/quarkus-app/
+```
 
-3. **Make Changes**
-   - Make your changes to the codebase. Be sure to include tests for new features or fixes.
+Có thể chạy ứng dụng bằng:
 
-4. **Commit Your Changes**
-   - Commit your changes with a descriptive message:
-     ```bash
-     git commit -m "Add feature X or fix issue Y"
-     ```
+```bash
+java -jar target/quarkus-app/quarkus-run.jar
+```
 
-5. **Push Your Changes**
-   - Push your changes to your forked repository:
-     ```bash
-     git push origin feature/your-feature
-     ```
+---
 
-6. **Submit a Pull Request**
-   - Open a pull request on the original repository. Describe the changes you have made and why they should be merged.
+## Build Docker image
 
-7. **Code Review**
-   - Your pull request will be reviewed by the project maintainers. Address any feedback or requested changes.
+Trong thư mục `project-service-quarkus`, chạy:
 
-8. **Merge**
-   - Once approved, your changes will be merged into the main branch of the project.
+```bash
+docker build -t portfolio-project-service-quarkus:1.0 .
+```
 
-### Issues
+Kiểm tra image:
 
-- **Reporting Issues**: If you encounter any issues with the project, please open an issue on GitHub. Provide detailed information about the problem and steps to reproduce it.
-- **Feature Requests**: If you have ideas for new features, feel free to submit a feature request.
+```bash
+docker images
+```
 
-Thank you for contributing to our project!
+Image mong muốn:
 
-## Contact
+```text
+portfolio-project-service-quarkus:1.0
+```
 
-If you have any questions, feedback, or inquiries regarding the project, please reach out to the respective project maintainers based on their area of responsibility:
+---
 
-### Project Maintainers
+## Deploy lên Kubernetes
 
-- **Lai Tran Trung Kien** (Frontend Lead)
-  - Role: Responsible for Angular frontend development and UI/UX design.
-  - Email: [Kien06112004@gmail.com](Kien06112004@gmail.com)
+Manifest Kubernetes nằm tại:
 
-- **Vu Hoang Chung** (Backend Lead)
-  - Role: Responsible for backend development including Spring Security, JWT, OpenFeign, email integration, Cloudinary configuration and handling service.
-  - Email: [Vuhoangchung12122004@gmail.com](Vuhoangchung12122004@gmail.com)
+```text
+../k8s/project-service-quarkus.yaml
+```
 
-- **Nguyen Quoc Khanh** (Testing and Database Management Lead)
-  - Role: Responsible for testing, designing database schemas, and handling service queries for the database.
-  - Email: [kn26066@gmail.com](kb26066@gmail.com)
+Nếu đang đứng ở thư mục gốc `microservice`, chạy:
 
-### Team Communication
+```bash
+kubectl apply -f k8s/project-service-quarkus.yaml
+```
 
-- **Discord**: Connect with us on Discord for community support. [Join here](https://discord.gg/MC7cMwVe)
+Kiểm tra pod:
 
+```bash
+kubectl get pods -n portfolio
+```
 
-## Conclusion
+Kiểm tra service:
 
-Thank you for exploring our project. We hope this documentation has provided you with a clear understanding of our application and its components. Our team has put significant effort into creating a robust and scalable system using Angular for the frontend and a microservices architecture for the backend, supported by MySQL and MongoDB databases.
+```bash
+kubectl get svc -n portfolio
+```
 
-If you have any questions, suggestions, or contributions, please don't hesitate to reach out to us through the contact details provided. Your feedback is invaluable in helping us improve and enhance the project.
+Service được expose qua NodePort:
 
-We appreciate your interest and support. Happy exploring!
+```text
+http://localhost:30896
+```
 
-Best regards,  
-The [BaConBao] Team
+Test API sau khi deploy Kubernetes:
+
+```powershell
+Invoke-RestMethod -Uri "http://localhost:30896/project/getAll" -Method Get
+```
+
+---
+
+## Kết nối với API Gateway
+
+Sau khi deploy thành công, API Gateway có thể route `/project/**` sang Quarkus service bằng cấu hình:
+
+```yaml
+- id: project-service-quarkus
+  uri: http://project-service-quarkus:8086
+  predicates:
+    - Path=/project/**
+  filters:
+    - AuthenticationFilter
+```
+
+Khi route qua Gateway, endpoint test là:
+
+```text
+http://localhost:30080/project/getAll
+```
+
+Vì route `/project/**` có `AuthenticationFilter`, cần gọi kèm JWT token.
+
+Ví dụ lấy token:
+
+```powershell
+$body = @{
+  email = "testuser@gmail.com"
+  password = "123456"
+} | ConvertTo-Json
+
+$response = Invoke-RestMethod `
+  -Uri "http://localhost:30080/auth/signin" `
+  -Method Post `
+  -ContentType "application/json" `
+  -Body $body
+
+$token = $response.data.token
+```
+
+Gọi API qua Gateway:
+
+```powershell
+Invoke-RestMethod `
+  -Uri "http://localhost:30080/project/getAll" `
+  -Method Get `
+  -Headers @{ Authorization = "Bearer $token" }
+```
+
+---
+
+## Trạng thái migrate
+
+Service này hiện đang ở giai đoạn migrate ban đầu:
+
+- Đã tạo Quarkus project
+- Đã cấu hình MySQL
+- Đã tạo endpoint test `/project/getAll`
+- Đã Docker hóa service
+- Đã deploy lên Kubernetes
+- Đã route API Gateway sang `project-service-quarkus`
+
+Các phần nghiệp vụ thật của `project-service` Spring Boot cũ sẽ được migrate dần sang Quarkus trong các bước tiếp theo.
+
+---
+
+## Ghi chú bảo mật
+
+Không commit các file chứa mật khẩu thật hoặc secret lên GitHub.
+
+Các file cần tránh commit:
+
+```text
+secret.yaml
+.env
+*.env
+target/
+```
+
+Nếu cần mẫu secret, sử dụng:
+
+```text
+k8s/secret.example.yaml
+```
