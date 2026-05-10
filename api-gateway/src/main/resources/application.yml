@@ -11,14 +11,14 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: profile-service
-          uri: lb://PROFILE-SERVICE
+        - id: image-service-quarkus
+          uri: http://image-service-quarkus:8083
           predicates:
-            - Path=/profile/**
+            - Path=/image/**
           filters:
             - AuthenticationFilter
-        - id: project-service
-          uri: lb://PROJECT-SERVICE
+        - id: project-service-quarkus
+          uri: http://project-service-quarkus:8086
           predicates:
             - Path=/project/**
           filters:
