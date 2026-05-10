@@ -1,0 +1,44 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: email-service
+  namespace: portfolio
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: email-service
+  template:
+    metadata:
+      labels:
+        app: email-service
+    spec:
+      containers:
+        - name: email-service
+          image: portfolio-email-service:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8087
+          env:
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              value: "http://discovery-server:8671/eureka"
+            - name: EUREKA_INSTANCE_HOSTNAME
+              value: "email-service.portfolio.svc.cluster.local"
+            - name: EUREKA_INSTANCE_INSTANCE_ID
+              value: "email-service:8087"
+            - name: EUREKA_INSTANCE_PREFER_IP_ADDRESS
+              value: "false"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: email-service
+  namespace: portfolio
+spec:
+  type: NodePort
+  selector:
+    app: email-service
+  ports:
+    - port: 8087
+      targetPort: 8087
+      nodePort: 30887

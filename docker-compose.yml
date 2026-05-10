@@ -1,0 +1,145 @@
+services:
+  discovery-server:
+    image: portfolio-discovery-server:1.0
+    container_name: discovery-server
+    ports:
+      - "8671:8671"
+    networks:
+      - portfolio-net
+    restart: unless-stopped
+
+  user-service:
+    image: portfolio-user-service:1.0
+    container_name: user-service
+    ports:
+      - "8088:8088"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://host.docker.internal:3306/portfolio?useSSL=false&serverTimezone=UTC&useLegacyDatetimeCode=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 123456
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8671/eureka
+    depends_on:
+      - discovery-server
+    networks:
+      - portfolio-net
+    restart: unless-stopped
+
+  api-gateway:
+    image: portfolio-api-gateway:1.0
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8671/eureka
+    depends_on:
+      - discovery-server
+      - user-service
+    networks:
+      - portfolio-net
+    restart: unless-stopped
+
+  project-service:
+    image: portfolio-project-service:1.0
+    container_name: project-service
+    ports:
+      - "8086:8086"
+    environment:
+      SPRING_APPLICATION_NAME: project-service
+      SPRING_DATASOURCE_URL: jdbc:mysql://host.docker.internal:3306/project1?useSSL=false&serverTimezone=UTC&useLegacyDatetimeCode=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 123456
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8671/eureka
+    depends_on:
+      - discovery-server
+    networks:
+      - portfolio-net
+    restart: unless-stopped
+
+  image-service:
+    image: portfolio-image-service:1.0
+    container_name: image-service
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://host.docker.internal:3306/image?useSSL=false&serverTimezone=UTC&useLegacyDatetimeCode=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 123456
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8671/eureka
+    depends_on:
+      - discovery-server
+    networks:
+      - portfolio-net
+    restart: unless-stopped
+
+  notification-service:
+    image: portfolio-notification-service:1.0
+    container_name: notification-service
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://host.docker.internal:3306/notification1?useSSL=false&serverTimezone=UTC&useLegacyDatetimeCode=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 123456
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8671/eureka
+    depends_on:
+      - discovery-server
+    networks:
+      - portfolio-net
+    restart: unless-stopped
+
+  profile-service:
+    image: portfolio-profile-service:1.0
+    container_name: profile-service
+    ports:
+      - "8085:8085"
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://host.docker.internal:27017/microservice-portfolio
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8671/eureka
+    depends_on:
+      - discovery-server
+    networks:
+      - portfolio-net
+    restart: unless-stopped
+
+  manager-service:
+    image: portfolio-manager-service:1.0
+    container_name: manager-service
+    ports:
+      - "8091:8091"
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://host.docker.internal:27017/microservice-portfolio
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8671/eureka
+    depends_on:
+      - discovery-server
+    networks:
+      - portfolio-net
+    restart: unless-stopped
+
+  email-service:
+    image: portfolio-email-service:1.0
+    container_name: email-service
+    ports:
+      - "8087:8087"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8671/eureka
+    depends_on:
+      - discovery-server
+    networks:
+      - portfolio-net
+    restart: unless-stopped
+
+  portfolio-client:
+    image: portfolio-client:1.0
+    container_name: portfolio-client
+    ports:
+      - "4200:80"
+    depends_on:
+      - api-gateway
+    networks:
+      - portfolio-net
+    restart: unless-stopped
+
+networks:
+  portfolio-net:
+    external: true
+    name: portfolio-net

@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: project-service
+server:
+  port: 8086
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8671/eureka
