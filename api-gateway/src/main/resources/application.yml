@@ -41,8 +41,8 @@ spring:
             - Path=/manager/**
           filters:
             - AuthenticationFilter
-        - id: image-service
-          uri: lb://IMAGE-SERVICE
+        - id: email-service-quarkus
+          uri: http://email-service-quarkus:8087
           predicates:
-            - Path=/image/**
+            - Path=/email/**
 
