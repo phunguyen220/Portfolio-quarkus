@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service-quarkus
+  namespace: portfolio
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-service-quarkus
+  template:
+    metadata:
+      labels:
+        app: user-service-quarkus
+    spec:
+      containers:
+        - name: user-service-quarkus
+          image: portfolio-user-service-quarkus:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8088
+          env:
+            - name: QUARKUS_HTTP_HOST
+              value: "0.0.0.0"
+
+            - name: QUARKUS_HTTP_PORT
+              value: "8088"
+
+            - name: QUARKUS_DATASOURCE_JDBC_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: portfolio-config
+                  key: USER_SERVICE_DB_URL
+
+            - name: QUARKUS_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: portfolio-secret
+                  key: MYSQL_USERNAME
+
+            - name: QUARKUS_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: portfolio-secret
+                  key: MYSQL_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service-quarkus
+  namespace: portfolio
+spec:
+  type: NodePort
+  selector:
+    app: user-service-quarkus
+  ports:
+    - port: 8088
+      targetPort: 8088
+      nodePort: 30898
