@@ -31,8 +31,8 @@ spring:
           uri: lb://PROFILE-HR-SERVICE
           predicates:
             - Path=/profile-hr/**
-        - id: notification-service
-          uri: lb://NOTIFICATION-SERVICE
+        - id: notification-service-quarkus
+          uri: http://notification-service-quarkus:8084
           predicates:
             - Path=/notification/**
         - id: manager-service
